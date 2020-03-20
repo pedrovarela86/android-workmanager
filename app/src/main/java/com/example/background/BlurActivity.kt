@@ -19,7 +19,9 @@ package com.example.background
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.work.WorkInfo
 import com.bumptech.glide.Glide
 import com.example.background.databinding.ActivityBlurBinding
 
@@ -34,7 +36,7 @@ class BlurActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Get the ViewModel
-        viewModel = ViewModelProviders.of(this).get(BlurViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(BlurViewModel::class.java)
 
         // Image uri should be stored in the ViewModel; put it there then display
         val imageUriExtra = intent.getStringExtra(KEY_IMAGE_URI)
@@ -44,6 +46,22 @@ class BlurActivity : AppCompatActivity() {
         }
 
         binding.goButton.setOnClickListener { viewModel.applyBlur(blurLevel) }
+
+        viewModel.outputWorkInfos.observe(this, workInfosObserver())
+    }
+
+    private fun workInfosObserver(): Observer<List<WorkInfo>> {
+        return Observer {
+            if (it.isNullOrEmpty()) return@Observer
+
+            val workInfo = it[0]
+
+            if (workInfo.state.isFinished) {
+                showWorkFinished()
+            } else {
+                showWorkInProgress()
+            }
+        }
     }
 
     /**
