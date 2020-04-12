@@ -6,8 +6,6 @@ import androidx.work.WorkerParameters
 import com.example.background.OUTPUT_PATH
 import timber.log.Timber
 import java.io.File
-import java.lang.Exception
-import java.sql.Time
 
 class CleanupWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
 
@@ -33,7 +31,6 @@ class CleanupWorker(context: Context, params: WorkerParameters) : Worker(context
                     }
                 }
             }
-
             Result.success()
         } catch (e: Exception) {
             Timber.e(e)
